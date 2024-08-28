@@ -8,7 +8,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import re
-
+# put your hugging face api key here
+HUGGINGFACE_API=""
 st.set_page_config(page_title="Travel Itinerary & Budget", page_icon="🌍", layout="wide")
 def fetch_content(url):
     try:
@@ -31,37 +32,29 @@ def func(location_name):
     for link in all_links:
         href = link.attrs['href']
         if href.startswith('/url?q='):
-            # Extract actual URL by stripping the prefix and additional parameters
             actual_url = href[7:].split('&')[0]
             ans += fetch_content(actual_url)
             count += 1
-            if count >= 5:  # Stop after fetching content from 5 links
+            # max 5
+            if count >= 5:
                 break
     
     return ans
 
 
 def write_output(ans):
-
-    # Extract days and events using regular expressions
     days_events = re.findall(r"(Day \d+ \(.*?\))(.*?)(?=Day \d+ \(|$)", ans, re.DOTALL)
     budget_breakdown = re.search(r"Total Budget Breakdown:(.*)", ans, re.DOTALL).group(1).strip()
-
-    # Streamlit setup
-
+    # display
     st.title("Travel Itinerary & Budget Breakdown")
-
-    # Display the itinerary
     for day, events in days_events:
         st.subheader(day)
-        events = re.sub(r'\d+\.\s*', '- ', events).strip()  # Convert numbered items to bullet points
+        events = re.sub(r'\d+\.\s*', '- ', events).strip() 
         st.markdown(events)
 
-    # Display the budget breakdown
     st.subheader("Budget Breakdown")
     st.markdown(budget_breakdown)
-
-    # Add a cool footer
+    
     st.markdown("""
         <style>
         footer {
@@ -76,11 +69,10 @@ def write_output(ans):
 
 
 def f(no_of_people ,start_location ,end_location, location,start_date,end_date,context):
-
-    # LLM CONFIGURATION
+    
     llm_config = {
         "model": "TheBloke/zephyr-7B-beta-GGUF",
-        "api_key": "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",
+        "api_key": HUGGINGFACE_API,
         "base_url": "http://localhost:1234/v1",
         "max_tokens": 1000,
         "timeout": 300,
@@ -91,12 +83,11 @@ def f(no_of_people ,start_location ,end_location, location,start_date,end_date,c
     from chromadb.utils import embedding_functions
 
     huggingface_ef = embedding_functions.HuggingFaceEmbeddingFunction(
-        api_key="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",
+        api_key=HUGGINGFACE_API,
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    # location='Delhi'
-    # location='tourist places '+location
+    
     ans=func(location)
     with open(f"travel/{location}_data.txt", 'w', encoding='utf-8') as f:
         f.write(ans)
@@ -108,7 +99,6 @@ def f(no_of_people ,start_location ,end_location, location,start_date,end_date,c
         system_message="A human admin. Interact with the planner to discuss the plan. Plan execution needs to be approved "
                     "by this admin.",
         code_execution_config={
-            # "work_dir": "travel",
             "use_docker": False
         },
         retrieve_config={
@@ -157,7 +147,7 @@ def f(no_of_people ,start_location ,end_location, location,start_date,end_date,c
         llm_config=llm_config,
     )
     huggingface_ef = embedding_functions.HuggingFaceEmbeddingFunction(
-        api_key="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",
+        api_key=HUGGINGFACE_API,
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
     retrieval_agent = autogen.AssistantAgent(
@@ -173,85 +163,45 @@ def f(no_of_people ,start_location ,end_location, location,start_date,end_date,c
         max_round=12
     )
 
-    # 'Try to cover more places, have a comfort, trip avoid public transport when every possible at a budget close to 50,000 INR, also on end date, reach 2 hours before to Hyd Airport'
-        
-
     manager = autogen.GroupChatManager(groupchat=group_chat, llm_config=llm_config)
-    # Message_prompt=f"""
-    #     NOT A PYTHON CODE, give me text as below for my prompt
-    #     MAKE SURE EACH PROMPT GENERATES LESS THAN 500 TOKENS FOR EACH DAY, IF NEEDED , COMPROMISE THE ENGLISH GRAMMER WORDS AND WRITE ONLY THE MAIN STUFF
-    #     Assume user has choosen following values, then sample output is as follows:
-    #     - Number of people: {no_of_people}
-    #     - Start location: {start_location}
-    #     - End location: {end_location}
-    #     - Location: {location}
-    #     - Start date: {start_date}
-    #     - End date: {end_date}
-    #     - Start time: {start_time}
-    #     - End time: {end_date}
-    #     - Context: {context}
-
-    #     Create a travel plan considering all the details and roles. The final output should include:
-    #     - Daily itinerary with transport and hotel bookings
-    #     - Total budget breakdown
-    #     Below is just the expected format of output, assume user asked for hyderabad with starting daya time at 9am, for 5 days and reach airport 2 hrs before 21:00, 
-    #     Day 1 (Start date)
-    #     i. Reached hyderabad at 9am
-    #     ii. Book a cab to the hotel named ..... fair = 200Rs
-    #     iii. Then go to the ... in a cab, fair = 500Rs
-    #     ...
-    #     ...
-    #     ...
-    #     Day 5 (end date)
-    #     i. ..
-    #     ii. ..
-    #     ..
-    #     ..
-    #     .. Vacate the room
-    #     .. Start to the airport around .... book cab, cab fair = 600Rs
-    #     ... Reached the airport 2 hours before 21:00 IST
-        
-    #     At the end, provide the total budget as the sum of each manager's cost, e.g., 5000Rs (travel) + 4000Rs (hotel).... = 15000Rs
-    #     TERMINATE
-    #     """
-    
+   
     Message_prompt = f"""
-NOT A PYTHON CODE, give me text as below for my prompt.
-MAKE SURE EACH PROMPT GENERATES LESS THAN 500 TOKENS FOR EACH DAY. IF NEEDED, COMPROMISE ON ENGLISH GRAMMAR AND FOCUS ONLY ON MAIN POINTS.
-Assume user has provided the following values:
-- Number of people: {no_of_people}
-- Start location: {start_location}
-- End location: {end_location}
-- Location: {location}
-- Start date: {start_date}
-- End date: {end_date}
-- Start time: {start_time}
-- End time: {end_time}
-- Context: {context}
-
-Create a travel plan specific to {location}, considering all the details and roles. The final output should include:
-- Daily itinerary with transport and hotel bookings
-- Total budget breakdown
-
-Below is the expected format of the output, assuming the user selected {location} with a start time at {start_time}, for {end_date - start_date} days and reaching the airport 2 hours before {end_time} on the final day:
-
-Day 1 ({start_date})
-i. Reached {location} at {start_time}
-ii. Book a cab to the hotel named XYZ Hotel - Fare: 200Rs
-iii. Visit place1 in a cab - Fare: 500Rs
-...
-...
-
-Day {end_date - start_date} ({end_date})
-i. Breakfast at the hotel - No cost
-ii. Check out from XYZ Hotel
-iii. Book a cab to {end_location} Airport, leaving around .... - Fare: 600Rs
-iv. Reach airport 2 hours before departure
-
-At the end, provide the total budget as the sum of each manager's cost, e.g., 5000Rs (travel) + 4000Rs (hotel) + ... = 15000Rs
-
-TERMINATE
-"""
+        NOT A PYTHON CODE, give me text as below for my prompt.
+        MAKE SURE EACH PROMPT GENERATES LESS THAN 500 TOKENS FOR EACH DAY. IF NEEDED, COMPROMISE ON ENGLISH GRAMMAR AND FOCUS ONLY ON MAIN POINTS.
+        Assume user has provided the following values:
+        - Number of people: {no_of_people}
+        - Start location: {start_location}
+        - End location: {end_location}
+        - Location: {location}
+        - Start date: {start_date}
+        - End date: {end_date}
+        - Start time: {start_time}
+        - End time: {end_time}
+        - Context: {context}
+        
+        Create a travel plan specific to {location}, considering all the details and roles. The final output should include:
+        - Daily itinerary with transport and hotel bookings
+        - Total budget breakdown
+        
+        Below is the expected format of the output, assuming the user selected {location} with a start time at {start_time}, for {end_date - start_date} days and reaching the airport 2 hours before {end_time} on the final day:
+        
+        Day 1 ({start_date})
+        i. Reached {location} at {start_time}
+        ii. Book a cab to the hotel named XYZ Hotel - Fare: 200Rs
+        iii. Visit place1 in a cab - Fare: 500Rs
+        ...
+        ...
+        
+        Day {end_date - start_date} ({end_date})
+        i. Breakfast at the hotel - No cost
+        ii. Check out from XYZ Hotel
+        iii. Book a cab to {end_location} Airport, leaving around .... - Fare: 600Rs
+        iv. Reach airport 2 hours before departure
+        
+        At the end, provide the total budget as the sum of each manager's cost, e.g., 5000Rs (travel) + 4000Rs (hotel) + ... = 15000Rs
+        
+        TERMINATE
+    """
 
     try:
         user_proxy.initiate_chat(
@@ -267,41 +217,20 @@ TERMINATE
 
     for line in lines:
         ans += line + '\n'
-    # st.write(ans)
-    # print(ans)
-    # with open('output_final.txt', 'w') as file:
-    #     file.write(ans)
-    # file.close()
-
-
-    # try:
-    #         # Start the conversation
-    #         user_proxy.initiate_chat(
-    #             manager,
-    #             message=Message_prompt
-    #         )
-    # except:
-    #         pass
-    # q=group_chat.messages[1]['content']
     st.markdown("""---""")
     st.write('Travel Plan')
     st.markdown("""---""")
-    # lines=q.split('\n')
-    # ans=""
-    # for line in lines:
-    #     ans+=line+'\n'
     return ans
 
 st.header('AI POWERED TRAVEL PLANNER🌍✈️')
 st.subheader('Make your travel plan now!!!')
 st.subheader("Start Your Adventure 🚀")
 st.text("")
-#st.image("sunrise.jpg", caption="Sunrise by the mountains")
+
 import streamlit as st
 import streamlit.components.v1 as components
 
 # Create a directory named 'static' in your project folder and place your images there
-
 components.html(
     """
 <!DOCTYPE html>
@@ -455,5 +384,4 @@ if st.button('Curate my travel vibes!!!'):
     ans = f(no_of_people, start_location, end_location, location, start_date, end_date, context)
     st.write(ans)
     st.markdown("### 🚗 Happy Journey!")
-    # write_output(ans)
     
