@@ -10,10 +10,21 @@ Tools and Libraries:
 1. autogen
 2. LM Studios
 3. Streamlit
-4. Zephyr Beta 7B hugging face model
+4. Zephyr Beta 7B llm
 5. Content based movie recommendation
 6. OMDB API
+7. hugging face models
+
 
 Data Collection:
 1. https://www.kaggle.com/code/rounakbanik/movie-recommender-systems
 2. OMDB 
+
+
+Test Example:
+Below is an example output for the film "Inception", a 2010 hollywood film.
+
+![Image 1](movierec1.png)
+![Image 2](movierec2.png)
+![Image 3](movierec3.png)
+![Image 4](movierec4.png)
