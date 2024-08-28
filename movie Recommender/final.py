@@ -8,17 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 import requests
 import urllib.parse
-# from llama_index.core import StorageContext, load_index_from_storage
-# from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
-# from llama_index.core import Settings
-# from langchain_core.prompts import PromptTemplate
-# from langchain.chains import LLMChain
-# from langchain_huggingface import HuggingFaceEndpoint
-# from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
-# from llama_index.llms.huggingface import HuggingFaceLLM
 import os 
 import random
-# from llama_index.core import PromptTemplate
 
 import json
 from chromadb.utils import embedding_functions
@@ -31,6 +22,10 @@ import autogen
 
 import os
 import requests
+# put your hugging face api key here
+HUGGINGFACE_KEY=""
+# omdb api keys here
+api_key=""
 
 def scrape_info(name, folder_path):
 
@@ -61,11 +56,11 @@ def makedata(curr_data,movie_name):
     return folder_name
 
 def RAG(folder_name,movie_name):
-    os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
+    os.environ['HUGGINGFACEHUB_API_TOKEN'] = HUGGINGFACE_KEY
     
     llm_config = {
         "model": "TheBloke/zephyr-7B-beta-GGUF",
-        "api_key": "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",
+        "api_key": HUGGINGFACE_KEY,
         "base_url": "http://localhost:1234/v1",
         "max_tokens": 1000,
         "timeout": 300,
@@ -136,15 +131,11 @@ def fetch_movie_details(movie_name, api_key):
     movie_name = re.sub(r'\s*\(\d{4}\)', '', movie_name)
     movie_name = urllib.parse.quote(movie_name)
 
-    # url=f'https://www.omdbapi.com/?t=inception&apikey=1fa32fd4'
-    url=f'https://www.omdbapi.com/?t={movie_name}&apikey=1fa32fd4'
+    url=f'https://www.omdbapi.com/?t={movie_name}&apikey={api_key}'
     response = requests.get(url)
     ans= response.json()
     return ans
 
-# OMDB API key
-#  "http://www.omdbapi.com/?i=tt3896198&apikey=1fa32fd4"
-api_key = "1fa32fd4"
 
 def getLLM(movie_name):
     if movie_name:
