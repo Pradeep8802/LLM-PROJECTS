@@ -11,10 +11,8 @@ Tools and Libraries:
 2. LM Studios
 3. Streamlit
 4. Zephyr Beta 7B llm
-5. Content based movie recommendation
-6. OMDB API
-7. hugging face models
-8. ChromaDB
+5. hugging face models
+6. ChromaDB
 
 Data Collection:
 1. Webscraping
