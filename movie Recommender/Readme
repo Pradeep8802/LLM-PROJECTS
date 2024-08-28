@@ -1,0 +1,15 @@
+🚀 Introducing the AI Powered Movie Recommender! 🎬✨
+Discover Your Next Cinematic Obsession 🎥
+
+Tired of scrolling through endless movie lists? Our innovative app is here to revolutionize your film-watching experience. Say goodbye to generic recommendations and hello to personalized movie suggestions tailored to your unique taste. 🍿
+
+An advanced Movie Recommedation System, which not just suggest movies, but also dives detailed insights, from captivating plot summaries to behind-the-scenes trivia, to the suggest movies, to building curiosity for the movie adventure  🎥🍿🌟
+Your next movie is a one button ahead, find it 🎬✨
+
+Tools and Libraries:
+1. autogen
+2. LM Studios
+3. Streamlit
+4. Zephyr Beta 7B hugging face model
+5. Content based movie recommendation
+6. OMDB API
