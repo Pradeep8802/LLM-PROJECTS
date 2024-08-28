@@ -6,6 +6,19 @@ From trip period to budget contraints, from way of travelling to comfortness of 
 Get a starting point to your complete journey with our travel planner!✈️
 Your dream vacation is just one click away. Find it now and let the adventure begin! 🎒🌟
 
+Tools and Libraries:
+1. autogen
+2. LM Studios
+3. Streamlit
+4. Zephyr Beta 7B llm
+5. Content based movie recommendation
+6. OMDB API
+7. hugging face models
+8. ChromaDB
+
+Data Collection:
+1. Webscraping
+
 Test Example:
 Below is an example output for the Delhi trip!
 ![Delhi Trip](https://github.com/Pradeep8802/LLM-PROJECTS/blob/main/travelPlanner/pic1.png?raw=true)
