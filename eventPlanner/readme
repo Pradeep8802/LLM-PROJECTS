@@ -2,5 +2,18 @@
 Transform Your Events into Unforgettable Experiences! 🎊🌟
 
 From Venue suggestion to return gifts , from food accomodation to programs, make your event a memorable one!!!
+Farewell, birthday,... may your event !!!
 
 Your next spectacular event is just a click away. Start planning today and make every occasion extraordinary! 🥳🎉
+
+Tools and Libraries:
+1. autogen
+2. LM Studios
+3. Streamlit
+4. Zephyr Beta 7B llm
+5. hugging face models
+
+Test Example:
+Below is an example output for the 8 year old birthday party!!!
+![birthday](https://github.com/Pradeep8802/LLM-PROJECTS/blob/main/eventPlanner/event2.png?raw=true)
+![birthday](https://github.com/Pradeep8802/LLM-PROJECTS/blob/main/eventPlanner/event2.png?raw=true)
